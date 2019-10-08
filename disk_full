@@ -1,0 +1,15 @@
+#!/bin/bash
+if [[ $# = 0 ]]; then
+	x=$(df -H | awk '0+$5 >= 90' |awk '{ print $5 " " $6 }' )
+elif [[ $# -eq 1 && $1 = [[:digit:]]* ]]; then
+	x=$(df -H | awk -v arg="$1" '0+$5 >= arg' |awk '{ print $5 " " $6 }' )
+else
+	echo "ett heltal förväntades"
+	exit 1
+fi
+
+for i in "${x[@]}"; do
+	if [[ -n $1 ]]; then
+		echo "$i"
+	fi
+done

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+lista() {
+	local dots=${dots}$2 # Lokal variabel så den inte ändras när funktionen går in i funktionen aka "Inception"
+	for i in $1/*; do # Loopar igenom innehållet i $i
+		# Här plockar jag fram current location genom echo $i som sedan är pipad till en cut
+		# Eftersom vi endast är intresserade av sista elementet i sökvägen vänder vi på strängen vi får
+		# cuttar den som vi vill ha den och sedan vänder tillbaka den
+		curr=$(echo $i | rev | cut -d "/" -f 1 | rev)
+		# Om det är en katalog och den inte är skrivbar
+		if [[ -d $i && ! -r $i ]]; then
+			echo "$dots[D]$curr"
+			lista $i "..."
+		# Om den inte är skrivbar
+		elif [[ ! -r $i ]]; then
+			echo "$dots???"
+		# Kollar om det finns någonting i katalogen, blir true om den är tom
+		# Här valde jag att skriva ut tre punkter för att visa att det inte 
+		# finns någonting i katalogen
+		elif [[ -z "$(ls -A $i)" ]]; then
+			echo "$dots[D]$curr"
+			echo "$dots..."
+		# Kollar om det är en fil
+		elif [[ -f $i ]]; then
+			echo "$dots[F]$curr"
+		# Kollar om det är en länk
+		elif [[ -h $i ]]; then
+			echo "$dots[L]$curr"
+		# Kollar om det är en directory
+		elif [[ -d $1 ]]; then
+			echo "$dots[D]$curr"
+			lista $i "..."
+		fi
+	done
+}
+
+if [[ $# -gt 1 ]]; then
+	echo "$0 takes 1 or 0 arguments"
+	exit 1
+# Här la jag till så om man inte anger ett argument så kör den skriptet på pwd
+elif [[ $# -lt 1 ]]; then
+	lista $(pwd)
+elif [[ -d $1 ]]; then
+	echo "[D]$1"
+	lista $1 "..."
+fi

@@ -1,0 +1,52 @@
+#!/bin/bash
+exitcode=0
+
+if [ $# = 0 ]; then
+	echo "Ja, vad?" >&2
+	exit 1
+fi
+
+if [ $1 = "-q" ]; then
+	exec > /dev/null 2>&1
+	shift
+fi
+if [ $1 != "är" -a $1 != "innehåller" ]; then
+	echo "Fattar inte" >&2
+	exit 1
+elif [ $# -eq 1 ]; then
+	echo "Vad $1 vad?"
+	exit 1
+elif [ $# -gt 1 -a $1 = "är" ]; then
+	while [ $# -gt 1 ]; do
+		if [ -L $2 ]; then
+			echo "$2 är en länk."
+			shift
+		elif [ -d $2 ]; then
+			echo "$2 är en katalog."
+			shift
+		elif [ ! -e $2 ]; then
+			echo "$2 finns inte."
+			shift
+			exitcode=2
+		else
+			echo "$2 är en fil."
+			shift
+		fi
+	done
+	exit $exitcode
+
+elif [ $# -gt 1 -a $1 = "innehåller" ]; then
+	while [ $# -gt 1 ]; do
+		if dpkg-query -S $2 >/dev/null 2>&1; then
+			paket=$(dpkg-query -S $2 | cut -d ":" -f 1)
+			echo "$2 finns i $paket"
+			shift
+		else
+			echo "Inget innehåller $2"
+			shift
+			exitcode=2
+		fi
+	done
+	exit $exitcode
+fi
+
