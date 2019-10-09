@@ -1,9 +1,11 @@
 #!/bin/bash
+# Variabler för databasen
 DB_user="mathias"
 DB_pass="mahe"
 DB_db="testdb"
 DB_random_names=("Sebastian" "Henrik" "Joseph" "Martin" "Mikael")
 
+# Uppdatering och installering av paket
 apt update -y
 apt upgrade -y
 apt autoremove -y
@@ -11,13 +13,20 @@ apt install apache2 -y
 apt install mysql-server -y
 apt install php libapache2-mod-php php-mysql -y
 
-UserExist="$(mysql -sse "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '${DB_user}');")"
+# Variabel för att kolla om databasen finns, returnerar 0 eller 1. Denna används för att inte addera
+# värden till tabellen om man kör en provision igen.
 DBExists="$(mysql -sse "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '${DB_db}';")"
 
+# Kopierar över hemsidan till rätt ställe
 cp /vagrant/index.php /var/www/html/
 cp /vagrant/style.css /var/www/html/
+
+# En snabb sed för att modifiera dir.conf så att apache läser in index.php som första val. Tar även bort
+# alla andra extensions förutom html och php.
 sudo sed -i '/.*Directory.*/c\\tDirectoryIndex index.php index.html' /etc/apache2/mods-available/dir.conf
 sudo systemctl restart apache2
+
+# Databas entries, skapa användare, skapa databas, ge rättigheter, skapa tabell.
 mysql -e "CREATE USER IF NOT EXISTS ${DB_user}@localhost IDENTIFIED BY '${DB_pass}';"
 
 mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_db};"
@@ -27,6 +36,8 @@ mysql -e "FLUSH PRIVILEGES;"
 echo "CREATE TABLE persons (id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
 name varchar(255) NOT NULL);" | mysql --user=$DB_user --password=$DB_pass $DB_db; 2>/dev/null
 
+
+# Lägga in namn i listan
 if [ ! "$DBExists" == "$DB_db" ]; then
     for i in ${DB_random_names[@]}; do 
         echo "INSERT INTO persons values (NULL, '$i');" | mysql --user=$DB_user --password=$DB_pass $DB_db;
