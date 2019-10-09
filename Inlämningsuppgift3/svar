@@ -1,0 +1,20 @@
+Fråga 3.7 "Om ssh-agent inte startas automatiskt vid inloggningen kan man starta den genom att ge kommandot eval
+$(ssh-agent). Berätta lite om vad som händer när man ger det kommandot och varför man behöver göra på det sättet
+och inte genom ett enklare kommando utan eval."
+
+Genom att endast köra ssh-agent så skriver den ut de variablerna som behövs för att du ska kunna connecta till den.
+När du istället kör eval kommer dessa varibler att laddas in till din omgivning. Detta har med att göra att en
+process endast ska kunna ändra omgivningen för sig själv och sina barn, inte sin förälder.
+
+Fråga 3.10 "Vid många typer av automatisering kan man välja något av verktygen bash, sed, awkeller python. 
+Vad har verktygen för för-och nackdelar? För vilken typ av uppgifter passar respektive verktyg bäst?"
+
+Bash är väldigt praktiskt när du jobbar med unix-baserade system, tex linux då det oftast redan
+finns installerat. Behöver du köra mindre skript för automatisering är bash väldigt kompetent.
+
+För större uppgifter är Python bättre anpassat då det är ett fulländat skriptspråk. Detta är
+även objektorienterat som ofast gör det lättare att strukturera och bygga upp fullständiga skript och
+applikationer.
+
+Sed och AWK är textredigeringsprogram, dessa är båda väldigt kompetenta och det har nog mest
+att göra med personlig preferens vad man föredrar. 

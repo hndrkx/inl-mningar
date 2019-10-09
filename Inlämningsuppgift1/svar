@@ -1,0 +1,11 @@
+1. "Hur fungerar omgivningen, och vad är poängen med omgivningsvariabler?"
+
+Omgivningsvariabler är variabler du kan sätta i ditt skal. Ett exempel kan vara att man ändrar PATH variabeln
+för att skalet skall veta vart i filsystemet den ska leta efter exekverbara filer. Ett annat exempel kan vara
+att sätta en standardvariabel för ett program, tex vilken editor som ska vara standard med variabeln EDITOR, eller 
+vilken terminal som skall vara standard med variabeln TERM. På så sätt vet du att om en process vill starta en
+EDITOR så kommer den använda din angivna variabel om inget annat angetts.
+
+2. "Antag att ett Bash-skript körs i en terminal och att man från en annan terminal skickar en signal till den processen. Vilka av signalerna HUP, INT, QUIT, KILL, TERM, USR1 avslutar processen?"
+
+Alla förutom QUIT.
